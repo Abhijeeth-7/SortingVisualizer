@@ -1,0 +1,19 @@
+body{
+    background: gray; 
+}
+
+.container{
+    margin: 0 5px;
+    border: 5px solid black;
+    border-style: inset;
+    display: 'flex';
+    flex-direction: column;
+}
+
+.data-point{
+    border-style: inset;
+    border: 1px solid black;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
