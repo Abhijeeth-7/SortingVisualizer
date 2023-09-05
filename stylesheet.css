@@ -1,19 +1,185 @@
-body{
-    background: gray; 
+.light-theme {
+  --background-color: #8bb992c2;
+  --color: black;
 }
 
-.container{
-    margin: 0 5px;
-    border: 5px solid black;
-    border-style: inset;
-    display: 'flex';
+.dark-theme {
+  --background-color: #112416f0;
+  --color: #ffffffe0;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--color);
+  transition: color 0.3s;
+  height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.bi {
+  color: var(--color);
+}
+
+label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.w-max-content {
+  width: max-content;
+}
+
+.navbar {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--color) 0px 10px 20px -20px;
+}
+
+.sort-controller {
+  flex: 1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 0 5%;
+}
+
+.sort-container {
+  padding: 0 10%;
+  width: 100%;
+  height: 80%;
+  display: flex;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .sort-controller {
     flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
 }
 
-.data-point{
-    border-style: inset;
-    border: 1px solid black;
-    display: inline-block;
-    margin: 0;
-    padding: 0;
+.data-point {
+  border: 1px inset #a1a1a1e0;
+  border-top: none;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  transition: transform 250ms cubic-bezier(1, 0.98, 0.32, 1);
+}
+
+.range-step-container {
+  position: relative;
+}
+
+.range-step-list {
+  position: absolute;
+  top: 20px;
+  left: 0;
+
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  color: gray;
+  list-style-type: none;
+}
+
+.range-step-list li {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.range-step-list li::after {
+  content: "";
+  width: 1px;
+  height: 5px;
+  background-color: rgba(128, 128, 128, 0.5);
+
+  position: absolute;
+  top: -2px;
+  z-index: 0;
+}
+
+.toggle {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.toggle input {
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.toggle-btn {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 100px;
+  background-color: rgb(211, 202, 202);
+}
+
+.bi-sun-fill {
+  position: absolute;
+  top: 2.5px;
+  left: 5px;
+  color: orange;
+  z-index: 1;
+}
+
+.bi-moon-stars-fill {
+  position: absolute;
+  top: 2.5px;
+  right: 5px;
+  color: white;
+  z-index: 1;
+  visibility: hidden;
+}
+
+.toggle-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  border-radius: 100%;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 0 8px -2px black;
+  transform: translate(0, -50%);
+  transition: transform 0.3s;
+}
+
+input:checked ~ .toggle-btn {
+  background-color: #423b3be8;
+}
+
+input:checked ~ .toggle-btn::after {
+  transform: translate(100%, -50%);
+  background-color: #3e3a3a;
+  box-shadow: 0 0 8px -2px white;
+}
+
+input:checked ~ .toggle-btn > .bi-moon-stars-fill {
+  transition: visibility 0.3s;
+  visibility: visible;
+}
+
+input:checked ~ .toggle-btn > .bi-sun-fill {
+  visibility: hidden;
+}
+
+#pause {
+  display: none;
 }
