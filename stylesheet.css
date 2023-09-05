@@ -21,6 +21,7 @@ body {
 
 .bi {
   color: var(--color);
+  cursor: pointer;
 }
 
 label {
@@ -97,6 +98,7 @@ label {
   position: relative;
   display: flex;
   justify-content: center;
+  user-select: none;
 }
 
 .range-step-list li::after {
@@ -129,6 +131,7 @@ label {
   height: 100%;
   border-radius: 100px;
   background-color: rgb(211, 202, 202);
+  cursor: pointer;
 }
 
 .bi-sun-fill {
@@ -137,6 +140,7 @@ label {
   left: 5px;
   color: orange;
   z-index: 1;
+  pointer-events: none;
 }
 
 .bi-moon-stars-fill {
@@ -146,6 +150,7 @@ label {
   color: white;
   z-index: 1;
   visibility: hidden;
+  pointer-events: none;
 }
 
 .toggle-btn::after {
