@@ -1,242 +1,116 @@
-const sortContainer = document.querySelector('.container');
-let data = [];
-for (let i=500; i>=5; i=i-5){
-    data.push(i);
-}
-data.sort((a, b) => 0.5 - Math.random());
-const width = (window.screen.width-200)/data.length 
-data.forEach((d, index) => {
-    let dataPoint = document.createElement('div');
-    dataPoint.id = index;
-    dataPoint.style.height = `${d}px`;
-    dataPoint.style.width = `${width-0.2}px`;
-    dataPoint.style.backgroundColor = `black`;
-    dataPoint.className = 'data-point';
-    sortContainer.appendChild(dataPoint);
-});
+import { BubbleSort } from "./bubbleSort.js";
+import { HeapSort } from "./heap.Sort.js";
+import { InsertionSort } from "./insertionSort.js";
+import { MergeSort } from "./mergeSort.js";
+import { QuickSort } from "./quickSort.js";
+import { SelelctionSort } from "./selectionSort.js";
+import { Visualizer } from "./visualizer.js";
 
-document.getElementById("sort-button").addEventListener('click', () => mergeSortAlgo());
+class Console {
+  data;
+  visualizer;
 
-//helper methods
-async function swap(i, j){
-    await delay(1);
-    swapDataPoints(i, j);
-    data[i] = data[i] + data[j];
-    data[j] = data[i] - data[j];
-    data[i] = data[i] - data[j];
-}
+  constructor() {
+    this.data = this.getData();
+    this.visualizer = new Visualizer(document, this.data);
+    this.setUpSortingControls();
+    this.setUpAnimationControl();
+    this.setUpThemeToggler();
+  }
 
-async function swapDataPoints(i, j){
-    const dataPoint1 = document.getElementById(i);
-    const dataPoint2 = document.getElementById(j);
-    dataPoint1.style.height = `${data[j]}px`;
-    dataPoint2.style.height = `${data[i]}px`;
-}
-
-
-function setColor(pos, color){
-    if (pos < data.length){
-        document.getElementById(pos).style.backgroundColor = color;
+  getData() {
+    const data = [];
+    for (let i = 99; i > 0; i -= 2) {
+      data.push(i);
     }
-}
+    return data;
+  }
 
-async function delay(millisecs){
-    return new Promise((resolve, reject) => {
-        setTimeout(() => resolve(), millisecs);
+  setUpSortingControls() {
+    document.querySelector("#shuffle").addEventListener("click", this.shuffle.bind(this));
+    document.querySelector("#play").addEventListener("click", this.play.bind(this));
+    document.querySelector("#pause").addEventListener("click", this.pause.bind(this));
+    document.querySelector("#reset").addEventListener("click", this.reset.bind(this));
+  }
+
+  setUpAnimationControl() {
+    document.querySelector("#animationDelayValue").innerHTML = ` ${150} ms`;
+    document.querySelector("#animationDelayRange").value = 6;
+    document.querySelector("#animationDelayRange").addEventListener("change", (event) => {
+      console.log(event);
+      this.visualizer.animationDelay = event.target.value;
+      document.querySelector("#animationDelayValue").innerHTML = ` ${this.visualizer.animationDelay * 25} ms`;
     });
-}
+  }
 
-//sorting functions
-async function bubbleSort(data){
-    for (let i = 0; i < data.length-1; i++){
-        for (let j = 0; j < data.length-1-i; j++){
-            setColor(j, 'white');
-            if (data[j] > data[j+1]){
-                setColor(j,'yellow');
-                setColor(j+1,'brown');
-                await swap(j, j+1);
-                setColor(j,'brown');
-                setColor(j+1,'yellow');
-                await delay(50);
-                setColor(j, 'white')
-                setColor(j+1, 'white')
-            }
-        }
-        setColor(data.length-1-i, 'green');
+  setUpThemeToggler() {
+    document.querySelector("#theme-toggler").addEventListener("change", (event) => {
+      document.querySelector("body").classList.toggle("light-theme");
+      document.querySelector("body").classList.toggle("dark-theme");
+      document.querySelector("#theme-name").innerHTML = `${event.target.checked ? "Dark" : "Light"} Mode`;
+    });
+  }
 
-        for (let j = 0; j < data.length-1-i; j++){
-            setColor(j, 'black');
-        }
+  async startSorting() {
+    const selectedSort = this.getSelectedSort();
+    await this.visualizer.play(selectedSort);
+  }
+
+  getSelectedSort() {
+    let selectedSort = null;
+    const sortSelector = document.querySelector("#sort-selector");
+    switch (+sortSelector.value) {
+      case 1:
+        selectedSort = BubbleSort;
+        break;
+      case 2:
+        selectedSort = InsertionSort;
+        break;
+      case 3:
+        selectedSort = SelelctionSort;
+        break;
+      case 4:
+        selectedSort = HeapSort;
+        break;
+      case 5:
+        selectedSort = MergeSort;
+        break;
+      case 6:
+        selectedSort = QuickSort;
+        break;
     }
-}
+    return selectedSort;
+  }
 
-async function selelctionSort(data){
-    for (let i = 0; i < data.length; i++){
-        let minLoc = i;
-        for (let j = i; j < data.length; j++){
-            await delay(20);
-            setColor(j, 'white');
-            if (data[j] < data[minLoc]){
-                setColor(minLoc, 'white');
-                setColor(j, 'yellow');
-                minLoc = j;
-            }
-        }
+  shuffle() {
+    this.visualizer.shuffleData();
+  }
 
-        if (i != minLoc){
-            await swap(i, minLoc);
-            setColor(i, 'green');
-            await delay(200);
-        } else{
-            setColor(i, 'green');
-        }
+  play() {
+    document.querySelector("#play").style.display = "none";
+    document.querySelector("#pause").style.display = "inline-block";
+    document.querySelector("#shuffle").style.display = "none";
 
-        for (let k=i+1;k<data.length;k++){
-            setColor(k, 'black');
-        }
+    if (this.visualizer.isPaused) {
+      this.visualizer.resume();
+    } else {
+      this.startSorting();
     }
+  }
+
+  pause() {
+    document.querySelector("#play").style.display = "inline-block";
+    document.querySelector("#pause").style.display = "none";
+    document.querySelector("#reset").style.display = "inline-block";
+    this.visualizer.pause();
+  }
+
+  reset() {
+    this.visualizer.initiateReset();
+    document.querySelector("#shuffle").style.display = "inline-block";
+    document.querySelector("#play").style.display = "inline-block";
+    document.querySelector("#pause").style.display = "none";
+  }
 }
 
-async function insertionSort(){
-    for(let i=0; i<data.length; i++){
-        setColor(i, 'green');
-        for(let j=i+1; j>=0; j--){
-            if (data[j] < data[j-1]){
-                setColor(j, 'yellow');
-                await swap(j,j-1);
-                setColor(j-1, 'yellow');
-                setColor(j, 'green');
-                await delay(50)
-                setColor(j-1, 'green');
-            } else{
-                break
-            }
-        }
-    }
-}
-
-async function heapSort(){
-    for (let i=0; i<data.length-1; i++){
-        for (let j=data.length-1-i; j>=0; j--){
-            const parent = j;
-            const left = 2*j+1;
-            const right = left+1;
-            await delay(1);
-            if (right < data.length-i){
-                setColor(right, 'white');
-                setColor(left, 'white');
-    
-                if (data[left] > data[parent]){
-                    await swap(left, parent);
-                }
-                if (data[right] > data[parent]){
-                    await swap(right, parent);
-                }
-            } else if (left < data.length-i){
-                setColor(left, 'white');
-
-                if (data[left] > data[parent]){
-                    await swap(left, parent);
-                }
-            }
-            
-            setColor(parent, 'white');
-        }
-        
-        // setColor(0, 'yellow');
-        // setColor(data.length-1-i, 'yellow');
-        // await delay(200);
-        await swap(0, data.length-1-i);
-        // await delay(200);
-        setColor(data.length-1-i, 'green');
-        
-        for (let j=data.length-2-i; j>=0; j--){
-            setColor(j, 'black');
-        }
-    }
-}
-
-async function mergeSortAlgo(){
-    mergeSort(data, 0, data.length-1);
-}
-
-async function mergeSort(data, i, j){
-    if (i >= j){
-        return 
-    }
-    let mid = Math.floor((i+j)/2);
-    await mergeSort(data, i, mid);
-    await mergeSort(data, mid+1, j);
-    await merge(data, i, mid, j);
-}
-
-async function merge(data, start, mid, end){
-    // setColor(start, 'yellow')
-    // setColor(mid, 'brown')
-    // setColor(end, 'yellow')
-    let result = [];
-    let p1 = start;
-    let p2 = mid+1;
-    while (p1 <= mid && p2 <= end){
-        await delay(1);
-        if (data[p1] <= data[p2]){
-            result.push(data[p1]);
-            setColor(p1, 'white');
-            p1++;
-        } else{
-            result.push(data[p2]);
-            setColor(p2, 'white');
-            p2++;
-        }
-    }
-    while (p1 <= mid){
-        await delay(1);
-        result.push(data[p1]);
-        setColor(p1, 'white');
-        p1++;
-    }
-    while (p2 <= end){
-        await delay(1);
-        result.push(data[p2]);
-        setColor(p2, 'white');
-        p2++;
-    }
-
-    for (let i=start; i<=end; i++){
-        let value = result.shift();
-        await delay(100);
-        await setValue(i, value);
-        data[i] = value;
-        setColor(i, 'green');
-    }
-    
-}
-
-async function setValue(pos, value){    
-    const dataPoint1 = document.getElementById(pos);
-    dataPoint1.style.height = `${value}px`;
-}
-
-async function quickSortAlog(){
-    quickSort(0, start, end);
-}
-
-async function quickSort(pivot, start, end){
-    if (i>=j){
-        return 
-    } 
-    await quickSort(privot, start, end);
-}
-
-async function sortPivot(pivot, start, end){
-    while (start < end){
-        if (data[start] > pivot){
-            await swap(start, end);
-            end--;
-        } else if (data[end] < pivot){
-            await swap(start, end);
-            start++;
-        }
-    }
-    return pivot;
-}
+const sortConsole = new Console();
