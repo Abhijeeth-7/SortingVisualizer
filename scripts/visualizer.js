@@ -21,10 +21,10 @@ export class Visualizer {
     this.setUpDataNodes(data);
   }
 
-  async play(sortingAlgorithm) {
+  async play(sortingAlgorithm, onSortCompletion) {
     const a = new sortingAlgorithm(this.data, this);
-    this.isStarted = true;
     await a.sort();
+    onSortCompletion();
   }
 
   async pause() {

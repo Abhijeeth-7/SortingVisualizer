@@ -37,7 +37,6 @@ class Console {
     document.querySelector("#animationDelayValue").innerHTML = ` ${150} ms`;
     document.querySelector("#animationDelayRange").value = 6;
     document.querySelector("#animationDelayRange").addEventListener("change", (event) => {
-      console.log(event);
       this.visualizer.animationDelay = event.target.value;
       document.querySelector("#animationDelayValue").innerHTML = ` ${this.visualizer.animationDelay * 25} ms`;
     });
@@ -53,7 +52,7 @@ class Console {
 
   async startSorting() {
     const selectedSort = this.getSelectedSort();
-    await this.visualizer.play(selectedSort);
+    await this.visualizer.play(selectedSort, this.stop);
   }
 
   getSelectedSort() {
@@ -107,6 +106,12 @@ class Console {
 
   reset() {
     this.visualizer.initiateReset();
+    document.querySelector("#shuffle").style.display = "inline-block";
+    document.querySelector("#play").style.display = "inline-block";
+    document.querySelector("#pause").style.display = "none";
+  }
+
+  stop() {
     document.querySelector("#shuffle").style.display = "inline-block";
     document.querySelector("#play").style.display = "inline-block";
     document.querySelector("#pause").style.display = "none";
